@@ -1,0 +1,1 @@
+INSERT INTO orders (user_id, order_status) VALUES ("kemoid", 2);
