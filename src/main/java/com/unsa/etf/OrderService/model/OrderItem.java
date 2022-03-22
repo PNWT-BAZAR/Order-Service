@@ -15,11 +15,22 @@ import javax.persistence.*;
 @Table
 public class OrderItem {
     @Id
+    @GeneratedValue
     private int id;
+
     private int quantity;
-    private int productId;
+
+    @ManyToOne
+    @JoinColumn(name = "productId")
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "orderId")
     private Order order;
+
+    public OrderItem(int quantity, Product product, Order order) {
+        this.quantity = quantity;
+        this.product = product;
+        this.order = order;
+    }
 }
