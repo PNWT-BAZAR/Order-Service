@@ -4,12 +4,15 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -21,11 +24,12 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "userId")
+    @NotNull
     private User user;
 
     private LocalDateTime createdAt;
     private Integer orderStatus;
-    // 0 - Pending, 1 - Approved, 2 - Delivered
+    // 0 - Pending, 1 - WaitingForApproval 2 - Approved, 3 - Delivered
 
     public Order(User user, LocalDateTime createdAt, Integer orderStatus) {
         this.user = user;

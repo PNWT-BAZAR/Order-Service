@@ -1,12 +1,12 @@
 package com.unsa.etf.OrderService.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -22,18 +22,26 @@ public class User {
     private String id;
 
     //@Column(nullable = false)
+    @NotBlank
+    @Size(min = 3, max = 250)
     private String firstName;
 
     //@Column(nullable = false)
+    @NotBlank
+    @Size(min = 3, max = 250)
     private String lastName;
 
     //@Column(nullable = false, unique = true)
+    @NotBlank
+    @Email
     private String email;
 
     //@Column(nullable = false)
+    @NotBlank
     private String phoneNumber;
 
     //@Column(nullable = false)
+    @NotBlank
     private String shippingAddress;
 
     public User(String firstName,
