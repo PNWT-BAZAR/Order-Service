@@ -1,4 +1,4 @@
-package com.unsa.etf.OrderService.Validator;
+package com.unsa.etf.OrderService.Responses;
 
 import lombok.*;
 

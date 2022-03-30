@@ -1,8 +1,11 @@
 package com.unsa.etf.OrderService.Service;
 
 import com.unsa.etf.OrderService.Repository.OrderRepository;
+import com.unsa.etf.OrderService.Responses.PaginatedObjectResponse;
 import com.unsa.etf.OrderService.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,5 +50,11 @@ public class OrderService {
             return true;
         }
         return false;
+    }
+
+    //Sorting and Pagination
+    public PaginatedObjectResponse<Order> readAndSortOrders (Pageable pageable){
+        Page<Order> products = orderRepository.findAll(pageable);
+        return new PaginatedObjectResponse<>(products.getContent(), products.getTotalElements(), products.getTotalPages());
     }
 }

@@ -1,10 +1,13 @@
 package com.unsa.etf.OrderService.Controller;
 
 import com.unsa.etf.OrderService.Service.OrderService;
-import com.unsa.etf.OrderService.Validator.BadRequestResponseBody;
+import com.unsa.etf.OrderService.Responses.BadRequestResponseBody;
 import com.unsa.etf.OrderService.Validator.BodyValidator;
 import com.unsa.etf.OrderService.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +20,9 @@ public class OrderController {
     private final OrderService orderService;
     private final BodyValidator bodyValidator;
 
+    @Value("${my.greeting: default value}")
+    private String configData;
+
     @Autowired
     public OrderController(OrderService orderService, BodyValidator bodyValidator) {
         this.orderService = orderService;
@@ -25,6 +31,7 @@ public class OrderController {
 
     @GetMapping
     public List<Order> getOrders() {
+        System.out.println("printam iz configa " + configData);
         return orderService.getOrders();
     }
 
@@ -68,5 +75,15 @@ public class OrderController {
         }
         return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "Order Does Not Exist!"));
 
+    }
+
+    //Sorting and Pagination
+    @GetMapping("/search")
+    public ResponseEntity<?> readOrders (Pageable pageable){
+        try{
+            return ResponseEntity.status(200).body(orderService.readAndSortOrders(pageable));
+        }catch (PropertyReferenceException e){
+            return ResponseEntity.status(409).body(new BadRequestResponseBody (BadRequestResponseBody.ErrorCode.NOT_FOUND, e.getMessage()));
+        }
     }
 }
