@@ -17,26 +17,30 @@ public class BodyValidator {
         return validator.validate(object).isEmpty();
     }
 
-    public String determineConstraintViolation (Object object){
+    public BadRequestResponseBody determineConstraintViolation (Object object){
 
         Set<ConstraintViolation<Object>> violations = validator.validate(object);
         ConstraintViolation<Object> violation;
 
         if(!violations.isEmpty()){
             violation = violations.iterator().next();
+
             if(violation.getMessageTemplate().equals("{javax.validation.constraints.NotBlank.message}")){
-                return "Parameter " + violation.getPropertyPath() + " is missing";
-            }else if (violation.getMessageTemplate().equals("{javax.validation.constraints.NotNull.message}")){
-                return "Parameter " + violation.getPropertyPath() + " is null";
-            }else if (violation.getMessageTemplate().equals("{javax.validation.constraints.Size.message}")){
-                return "The size of parameter " + violation.getPropertyPath() + " is incorrect";
-            }else if (violation.getMessageTemplate().equals("{javax.validation.constraints.Min.message}")){
-                return "The parameter " + violation.getPropertyPath() + " must me greater than 0";
-            } else if (violation.getMessageTemplate().equals("{javax.validation.constraints.Email.message}")){
-                return "The parameter " + violation.getPropertyPath() + " is incorrect";
+                return new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.VALIDATION, "Parameter " + violation.getPropertyPath() + " is missing");
+            }
+            else if (violation.getMessageTemplate().equals("{javax.validation.constraints.NotNull.message}")){
+                return new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.VALIDATION, "Parameter " + violation.getPropertyPath() + " is null");
+            }
+            else if (violation.getMessageTemplate().equals("{javax.validation.constraints.Min.message}")){
+                return new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.VALIDATION, "The parameter " + violation.getPropertyPath() + " must me greater than 0");
+            }
+            else if (violation.getMessageTemplate().equals("{javax.validation.constraints.Email.message}") ||
+                    violation.getMessageTemplate().equals("{javax.validation.constraints.Size.message}") ||
+                    violation.getMessageTemplate().equals("{javax.validation.constraints.Pattern.message}")) {
+
+                return new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.VALIDATION, "The parameter " + violation.getPropertyPath() + " is incorrect");
             }
         }
-
-        return "";
+        return null;
     }
 }
