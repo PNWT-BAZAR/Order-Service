@@ -1,5 +1,6 @@
 package com.unsa.etf.OrderService.Controller;
 
+import com.unsa.etf.OrderService.ProductRestConsumer;
 import com.unsa.etf.OrderService.Service.OrderService;
 import com.unsa.etf.OrderService.Responses.BadRequestResponseBody;
 import com.unsa.etf.OrderService.Validator.BodyValidator;
@@ -16,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("orders")
 public class OrderController {
+    @Autowired
+    private ProductRestConsumer productRestConsumer;
 
     private final OrderService orderService;
     private final BodyValidator bodyValidator;
@@ -86,4 +89,12 @@ public class OrderController {
             return ResponseEntity.status(409).body(new BadRequestResponseBody (BadRequestResponseBody.ErrorCode.NOT_FOUND, e.getMessage()));
         }
     }
+
+
+    ////////FEIGN CLIENT
+    @GetMapping("/test/{id}")
+    public ResponseEntity<?> testFeignClient(@PathVariable String id){
+        return ResponseEntity.status(200).body(productRestConsumer.getProductById(id));
+    }
+
 }
