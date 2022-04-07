@@ -1,4 +1,4 @@
-package com.unsa.etf.OrderService;
+package com.unsa.etf.OrderService.RestConsumers;
 
 import com.unsa.etf.OrderService.model.Product;
 import org.springframework.cloud.openfeign.FeignClient;

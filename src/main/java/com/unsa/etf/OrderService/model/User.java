@@ -57,6 +57,13 @@ public class User {
         this.shippingAddress = shippingAddress;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) return true;
+        User otherUser = (User)other;
+        return this.getEmail().equals(otherUser.getEmail());
+    }
+
     public User() {
     }
 }

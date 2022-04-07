@@ -1,6 +1,6 @@
 package com.unsa.etf.OrderService.Controller;
 
-import com.unsa.etf.OrderService.ProductRestConsumer;
+import com.unsa.etf.OrderService.RestConsumers.ProductRestConsumer;
 import com.unsa.etf.OrderService.Service.OrderService;
 import com.unsa.etf.OrderService.Responses.BadRequestResponseBody;
 import com.unsa.etf.OrderService.Validator.BodyValidator;

@@ -1,10 +1,14 @@
 package com.unsa.etf.OrderService.Controller;
 
+import com.unsa.etf.OrderService.RestConsumers.ProductRestConsumer;
+import com.unsa.etf.OrderService.RestConsumers.UserRestConsumer;
 import com.unsa.etf.OrderService.Service.OrderItemService;
 import com.unsa.etf.OrderService.Responses.BadRequestResponseBody;
 import com.unsa.etf.OrderService.Validator.BodyValidator;
 import com.unsa.etf.OrderService.model.Order;
 import com.unsa.etf.OrderService.model.OrderItem;
+import com.unsa.etf.OrderService.model.User;
+import feign.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -12,11 +16,15 @@ import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("orderItems")
 public class OrderItemController {
+    @Autowired
+    private ProductRestConsumer productRestConsumer;
+    @Autowired
+    private UserRestConsumer userRestConsumer;
 
     private final OrderItemService orderItemService;
     private final BodyValidator bodyValidator;
@@ -32,9 +40,23 @@ public class OrderItemController {
         return orderItemService.getOrderItems();
     }
 
+
     @GetMapping("/history/{userId}")
-    public List<OrderItem> getOrdersHistory(@PathVariable("userId") String userId) {
-        return orderItemService.getOrderItems();
+    public ResponseEntity<?> getOrdersHistory(@PathVariable("userId") String userId) {
+        try{
+            List<OrderItem> allOrderItems = orderItemService.getOrderItems();
+            var fetchedUser = (LinkedHashMap<String, String>) userRestConsumer.getUserById(userId).getBody();
+            List<String> l = new ArrayList<String>(fetchedUser.values());
+            var email = l.get(5);
+            allOrderItems = allOrderItems.stream().filter(x -> Objects.equals(x.getOrder().getUser().getEmail(), email)).toList();
+            HashMap<String, Object> response = new HashMap<String, Object>();
+            response.put("orderItems", allOrderItems);
+            response.put("userData", fetchedUser);
+            return ResponseEntity.status(200).body(response);
+        } catch (Exception error){
+            System.out.println(error);
+            return ResponseEntity.status(505).body("Internal server error");
+        }
     }
 
     @GetMapping("/{orderItemId}")
