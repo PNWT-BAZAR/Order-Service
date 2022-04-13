@@ -35,35 +35,36 @@ public class OrderServiceApplication {
 										 OrderItemRepository orderItemRepository) {
 
 		return args -> {
-			Product sofa = new Product("Indivi Sofa",
+			Product sofa = new Product("product1", "Indivi Sofa",
 											"With low armrests that provide a grounded and contemporary look, this sofa combines comfort and style seamlessly.",
 											12,
 											1250.0,
 											0,
 											0);
 
-			Product barstool = new Product("Princeton Barstool",
+			Product barstool = new Product("product2", "Princeton Barstool",
 											"Elegance and comfort beautifully combine in the Princeton bar stool.",
 											9,
 											250.0,
 											0,
 											0);
 
+
 			productRepository.saveAll(Arrays.asList(sofa, barstool));
 
-			User faruk = new User("Faruk",
+			User faruk = new User("user1", "Faruk",
 									"Smajlovic",
 									"fsmajlovic2@etf.unsa.ba",
 									"061111222",
 									"Envera Sehovica 24");
 
-			User kemal = new User("Kemal",
+			User kemal = new User("user2", "Kemal",
 									"Lazovic",
 									"klazovic1@etf.unsa.ba",
 									"061333444",
 									"Podbudakovici 4");
 
-			User taida = new User("Taida",
+			User taida = new User("user3", "Taida",
 									"Kadric",
 									"tkadric1@etf.unsa.ba",
 									"061555666",

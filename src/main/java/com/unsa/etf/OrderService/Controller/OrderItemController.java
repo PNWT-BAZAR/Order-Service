@@ -5,9 +5,11 @@ import com.unsa.etf.OrderService.RestConsumers.ProductRestConsumer;
 import com.unsa.etf.OrderService.RestConsumers.UserRestConsumer;
 import com.unsa.etf.OrderService.Service.OrderItemService;
 import com.unsa.etf.OrderService.Responses.BadRequestResponseBody;
+import com.unsa.etf.OrderService.Service.ProductService;
 import com.unsa.etf.OrderService.Validator.BodyValidator;
 import com.unsa.etf.OrderService.model.Order;
 import com.unsa.etf.OrderService.model.OrderItem;
+import com.unsa.etf.OrderService.model.Product;
 import com.unsa.etf.OrderService.model.User;
 import feign.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +31,19 @@ public class OrderItemController {
 
     private final OrderItemService orderItemService;
     private final BodyValidator bodyValidator;
+    private final ProductService productService;
 
     @Autowired
-    public OrderItemController(OrderItemService orderItemService, BodyValidator bodyValidator) {
+    public OrderItemController(OrderItemService orderItemService, BodyValidator bodyValidator, ProductService productService) {
         this.orderItemService = orderItemService;
         this.bodyValidator = bodyValidator;
+        this.productService = productService;
     }
 
     @GetMapping
     public List<OrderItem> getOrderItems() {
         return orderItemService.getOrderItems();
     }
-
 
     @GetMapping("/history/{userId}")
     public ResponseEntity<?> getOrdersHistory(@PathVariable("userId") String userId) {
@@ -76,18 +79,16 @@ public class OrderItemController {
         try {
             var fetchedProduct = (LinkedHashMap<String, Integer>) productRestConsumer.getProductById(orderItem.getProduct().getId()).getBody();
             List<Integer> l = new ArrayList<Integer>(fetchedProduct.values());
-            Integer productQuantity = (l.get(3));
-            if ( productQuantity > 0) {
+            Integer fetchedProductQuantity = (l.get(3));
+            if ( fetchedProductQuantity > orderItem.getQuantity() ) {
                 if (bodyValidator.isValid(orderItem)) {
+                    productService.addNewProduct(orderItem.getProduct());
                     OrderItem orderItem1 = orderItemService.addNewOrderItem(orderItem);
-                    if (orderItem1 == null) {
-                        return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.ALREADY_EXISTS, "OrderItem Already Exists!"));
-                    }
                     return ResponseEntity.status(200).body(orderItem1);
                 }
                 return ResponseEntity.status(409).body(bodyValidator.determineConstraintViolation(orderItem));
             } else {
-                return ResponseEntity.status(200).body("Product quantity depleted, cannot create order.");
+                return ResponseEntity.status(200).body(BadRequestResponseBody.builder().error(BadRequestResponseBody.ErrorCode.VALIDATION).message("Product quantity depleted, cannot create order.").build());
             }
         } catch (Exception error) {
             System.out.println(error);
@@ -99,9 +100,9 @@ public class OrderItemController {
     public ResponseEntity<?> updateOrderItem(@RequestBody OrderItem orderItem) {
         if (bodyValidator.isValid(orderItem)) {
             OrderItem updatedOrderItem = orderItemService.updateOrderItem(orderItem);
-            if (updatedOrderItem == null) {
-                return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "OrderItem Does Not Exist!"));
-            }
+//            if (updatedOrderItem == null) {
+//                return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "OrderItem Does Not Exist!"));
+//            }
             return ResponseEntity.status(200).body(updatedOrderItem);
         }
         return ResponseEntity.status(409).body(bodyValidator.determineConstraintViolation(orderItem));
@@ -130,14 +131,16 @@ public class OrderItemController {
     //ADDITIONAL LOGIC
 
     @PutMapping("/reviewOrder/{orderItemId}")
-    public ResponseEntity<?> updateOrderItem(@RequestBody OrderItem orderItem, @RequestBody ProductReview productReview) {
+    public ResponseEntity<?> updateOrderItem(@RequestBody ProductReview productReview) {
+        var orderItem = productReview.getOrderItem();
+        var reviewValue = productReview.getReviewValue();
+        var reviewedLocalProduct = updateReviewForLocalProduct(orderItem.getProduct(), reviewValue);
+
         try {
             if (bodyValidator.isValid(orderItem)) {
-                productRestConsumer.reviewProduct(orderItem.getProduct().getId(), productReview.getReviewValue());
+                productService.addNewProduct(reviewedLocalProduct);
+                productRestConsumer.reviewProductById(orderItem.getProduct().getId(), productReview.getReviewValue());
                 OrderItem updatedOrderItem = orderItemService.updateOrderItem(orderItem);
-                if (updatedOrderItem == null) {
-                    return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "OrderItem Does Not Exist!"));
-                }
                 return ResponseEntity.status(200).body(updatedOrderItem);
             }
             return ResponseEntity.status(409).body(bodyValidator.determineConstraintViolation(orderItem));
@@ -145,6 +148,12 @@ public class OrderItemController {
             System.out.println(error);
             return ResponseEntity.status(505).body(error);
         }
+    }
+
+    private Product updateReviewForLocalProduct(Product localProduct, int review){
+        localProduct.setReviewSum(localProduct.getReviewSum() + review);
+        localProduct.setTotalReviews(localProduct.getTotalReviews() + 1);
+        return localProduct;
     }
 
 }

@@ -16,8 +16,8 @@ import javax.validation.constraints.Size;
 @Table
 public class User {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
+//    @GeneratedValue(generator = "uuid")
+//    @GenericGenerator(name = "uuid", strategy = "uuid")
     @Column(columnDefinition = "CHAR(32)")
     private String id;
 

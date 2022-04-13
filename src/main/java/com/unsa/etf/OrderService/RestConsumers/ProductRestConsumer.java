@@ -12,5 +12,5 @@ public interface ProductRestConsumer {
     public ResponseEntity<?> getProductById(@PathVariable String id);
 
     @PutMapping("/products/reviewProduct/{productId}")
-    public ResponseEntity<?> reviewProduct(@PathVariable String productId, @RequestBody int reviewValue);
+    public ResponseEntity<?> reviewProductById(@PathVariable String productId, @RequestBody int reviewValue);
 }
