@@ -30,9 +30,12 @@ public class OrderItem {
     @JoinColumn(name = "orderId")
     private Order order;
 
-    public OrderItem(int quantity, Product product, Order order) {
+    private boolean reviewedOrder = false;
+
+    public OrderItem(int quantity, Product product, Order order, boolean reviewedOrder) {
         this.quantity = quantity;
         this.product = product;
         this.order = order;
+        this.reviewedOrder = reviewedOrder;
     }
 }

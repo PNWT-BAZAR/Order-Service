@@ -77,10 +77,10 @@ public class OrderServiceApplication {
 
 			orderRepository.saveAll(Arrays.asList(order1, order2, order3));
 
-			OrderItem oi1 = new OrderItem(2,barstool, order1);
-			OrderItem oi2 = new OrderItem(3,barstool, order2);
-			OrderItem oi3 = new OrderItem(1,sofa, order2);
-			OrderItem oi4 = new OrderItem(1,sofa, order3);
+			OrderItem oi1 = new OrderItem(2,barstool, order1, false);
+			OrderItem oi2 = new OrderItem(3,barstool, order2, false);
+			OrderItem oi3 = new OrderItem(1,sofa, order2, false);
+			OrderItem oi4 = new OrderItem(1,sofa, order3, false);
 
 			orderItemRepository.saveAll(Arrays.asList(oi1, oi2, oi3, oi4));
 		};
