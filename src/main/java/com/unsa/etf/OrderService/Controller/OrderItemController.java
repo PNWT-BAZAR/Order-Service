@@ -140,6 +140,7 @@ public class OrderItemController {
             if (bodyValidator.isValid(orderItem)) {
                 productService.addNewProduct(reviewedLocalProduct);
                 productRestConsumer.reviewProductById(orderItem.getProduct().getId(), productReview.getReviewValue());
+                orderItem.setReviewedOrder(true);
                 OrderItem updatedOrderItem = orderItemService.updateOrderItem(orderItem);
                 return ResponseEntity.status(200).body(updatedOrderItem);
             }
