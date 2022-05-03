@@ -5,15 +5,16 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor  //zasto ne radi ???
 @NoArgsConstructor
 public class BadRequestResponseBody {
-    private  ErrorCode error;
+    private ErrorCode error;
     private String message;
 
     public enum ErrorCode {
         VALIDATION,
         NOT_FOUND,
-        ALREADY_EXISTS;
+        ALREADY_EXISTS,
+        UNKNOWN;
     }
 }

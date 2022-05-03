@@ -1,8 +1,8 @@
 package com.unsa.etf.OrderService.Controller;
 
+import com.unsa.etf.OrderService.Responses.*;
 import com.unsa.etf.OrderService.RestConsumers.ProductRestConsumer;
 import com.unsa.etf.OrderService.Service.OrderService;
-import com.unsa.etf.OrderService.Responses.BadRequestResponseBody;
 import com.unsa.etf.OrderService.Validator.BodyValidator;
 import com.unsa.etf.OrderService.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,68 +33,68 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getOrders() {
+    public ObjectListResponse<Order> getOrders() {
         System.out.println("printam iz configa " + configData);
-        return orderService.getOrders();
+        return new ObjectListResponse<>(200, orderService.getOrders(), null);
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<?> getOrderById(@PathVariable("orderId") String orderId) {
+    public ObjectResponse<Order> getOrderById(@PathVariable("orderId") String orderId) {
         Order order = orderService.getOrderById(orderId);
         if (order == null) {
-            return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "Order Does Not Exist!"));
+            return new ObjectResponse<>(409, null, new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "Order Does Not Exist!"));
         }
-        return ResponseEntity.status(200).body(order);
+        return new ObjectResponse<>(200, order, null);
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody Order order){
+    public ObjectResponse<Order> createOrder(@RequestBody Order order){
         if (bodyValidator.isValid(order)) {
             Order order1 = orderService.addNewOrder(order);
             if (order1 == null) {
-                return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.ALREADY_EXISTS, "Order Already Exists!"));
+                return new ObjectResponse<>(409, null, new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.ALREADY_EXISTS, "Order Already Exists!"));
             }
-            return ResponseEntity.status(200).body(order1);
+            return new ObjectResponse<>(409, order1, null);
         }
-        return ResponseEntity.status(409).body(bodyValidator.determineConstraintViolation(order));
+        return new ObjectResponse<>(409, null, bodyValidator.determineConstraintViolation(order));
     }
 
     @PutMapping
-    public ResponseEntity<?> updateOrder(@RequestBody Order order) {
+    public ObjectResponse<Order> updateOrder(@RequestBody Order order) {
         if (bodyValidator.isValid(order)) {
             Order updatedOrder = orderService.updateOrder(order);
             if (updatedOrder == null) {
-                return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "Order Does Not Exist!"));
+                return new ObjectResponse<>(409, null, new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "Order Does Not Exist!"));
             }
-            return ResponseEntity.status(200).body(updatedOrder);
+            return new ObjectResponse<>(200, updatedOrder, null);
         }
-        return ResponseEntity.status(409).body(bodyValidator.determineConstraintViolation(order));
+        return new ObjectResponse<>(409, null, bodyValidator.determineConstraintViolation(order));
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<?> deleteOrder(@PathVariable("orderId") String orderId) {
+    public ObjectDeletionResponse deleteOrder(@PathVariable("orderId") String orderId) {
         if (orderService.deleteOrder(orderId)) {
-            return ResponseEntity.status(200).body("Order Successfully Deleted!");
+            return new ObjectDeletionResponse(200,"Order Successfully Deleted!", null );
         }
-        return ResponseEntity.status(409).body(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "Order Does Not Exist!"));
+        return new ObjectDeletionResponse(409, "An error has occurred!", new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.NOT_FOUND, "Order Does Not Exist!"));
 
     }
 
     //Sorting and Pagination
     @GetMapping("/search")
-    public ResponseEntity<?> readOrders (Pageable pageable){
+    public PaginatedObjectResponse<Order> readOrders (Pageable pageable){
         try{
-            return ResponseEntity.status(200).body(orderService.readAndSortOrders(pageable));
+            return orderService.readAndSortOrders(pageable);
         }catch (PropertyReferenceException e){
-            return ResponseEntity.status(409).body(new BadRequestResponseBody (BadRequestResponseBody.ErrorCode.NOT_FOUND, e.getMessage()));
+            return PaginatedObjectResponse.<Order>builder().statusCode(409).error(new BadRequestResponseBody (BadRequestResponseBody.ErrorCode.NOT_FOUND, e.getMessage())).build();
         }
     }
 
 
     ////////FEIGN CLIENT
-    @GetMapping("/test/{id}")
-    public ResponseEntity<?> testFeignClient(@PathVariable String id){
-        return ResponseEntity.status(200).body(productRestConsumer.getProductById(id));
-    }
+//    @GetMapping("/test/{id}")
+//    public ObjectResponse<Order> testFeignClient(@PathVariable String id){
+//        return new ObjectResponse<>(200, productRestConsumer.getProductById(id).getObject(), null);
+//    }
 
 }

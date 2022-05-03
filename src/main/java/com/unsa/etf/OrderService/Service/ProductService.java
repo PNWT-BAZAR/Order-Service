@@ -6,8 +6,10 @@ import com.unsa.etf.OrderService.Responses.PaginatedObjectResponse;
 import com.unsa.etf.OrderService.model.Order;
 import com.unsa.etf.OrderService.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,8 +55,8 @@ public class ProductService {
     }
 
     //Sorting and Pagination
-//    public PaginatedObjectResponse<Order> readAndSortOrders (Pageable pageable){
-//        Page<Order> products = orderRepository.findAll(pageable);
-//        return new PaginatedObjectResponse<>(products.getContent(), products.getTotalElements(), products.getTotalPages());
-//    }
+    public PaginatedObjectResponse<Product> readAndSortProducts (Pageable pageable){
+        Page<Product> products = productRepository.findAll(pageable);
+        return new PaginatedObjectResponse<>(200, products.getContent(), products.getTotalElements(), products.getTotalPages(), null);
+    }
 }

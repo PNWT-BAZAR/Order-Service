@@ -54,7 +54,7 @@ public class OrderItemService {
 
     //Sorting and Pagination
     public PaginatedObjectResponse<OrderItem> readAndSortOrderItems (Pageable pageable){
-        Page<OrderItem> products = orderItemRepository.findAll(pageable);
-        return new PaginatedObjectResponse<>(products.getContent(), products.getTotalElements(), products.getTotalPages());
+        Page<OrderItem> orderItems = orderItemRepository.findAll(pageable);
+        return new PaginatedObjectResponse<>(200, orderItems.getContent(), orderItems.getTotalElements(), orderItems.getTotalPages(), null);
     }
 }

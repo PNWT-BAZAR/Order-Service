@@ -1,5 +1,7 @@
 package com.unsa.etf.OrderService.Responses;
 
+import com.unsa.etf.OrderService.model.OrderItem;
+import com.unsa.etf.OrderService.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +11,9 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-//Generic because the almost identical code would repeat 4 times
-public class PaginatedObjectResponse<ObjectType> {
+public class OrderItemsHistoryResponse {
     private int statusCode;
-    private List<ObjectType> foundObjects;
-    private long numberOfItems;
-    private int numberOfPages;
+    private User user;
+    private List<OrderItem> orderItems;
     private BadRequestResponseBody error;
 }
