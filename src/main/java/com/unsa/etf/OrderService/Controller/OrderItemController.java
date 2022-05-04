@@ -42,35 +42,15 @@ public class OrderItemController {
 
     @GetMapping("/history/{userId}")
     public OrderItemsHistoryResponse getOrdersHistory(@PathVariable("userId") String userId) {
-//        try {
-//            List<OrderItem> allOrderItems = orderItemService.getOrderItems();
-//            var fetchedUser = (LinkedHashMap<String, String>) userRestConsumer.getUserById(userId).getBody();
-//            List<String> l = new ArrayList<String>(fetchedUser.values());
-//            var email = l.get(5);
-//            var filteredOrderItems = allOrderItems.stream().filter(x -> Objects.equals(x.getOrder().getUser().getEmail(), email)).toList();
-//
-//            HashMap<String, Object> response = new HashMap<String, Object>();
-//            response.put("orderItems", filteredOrderItems);
-//            response.put("userData", fetchedUser);
-//
-//            return ResponseEntity.status(200).body(response);
-//        } catch (Exception error) {
-//            System.out.println(error);
-//            return ResponseEntity.status(505).body(error);
-//        }
-
-        //////
         try {
             List<OrderItem> allOrderItems = orderItemService.getOrderItems();
             var fetchedUser = userRestConsumer.getUserById(userId).getObject();
             var userEmail = fetchedUser.getEmail();
             var filteredOrderItems = allOrderItems.stream().filter(x -> Objects.equals(x.getOrder().getUser().getEmail(), userEmail)).toList();
             return new OrderItemsHistoryResponse(200, fetchedUser, filteredOrderItems, null);
-            //return new ObjectListResponse<>(200, filteredOrderItems, null);
         } catch (Exception error) {
             System.out.println(error);
             return OrderItemsHistoryResponse.builder().statusCode(505).error(new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.UNKNOWN, error.getMessage())).build();
-            //return new ObjectListResponse<>(505, null, new BadRequestResponseBody(BadRequestResponseBody.ErrorCode.UNKNOWN, error.getMessage()));
         }
     }
 
@@ -89,13 +69,7 @@ public class OrderItemController {
             var fetchedProduct = productRestConsumer.getProductById(orderItem.getProduct().getId()).getObject();
             var fetchedProductQuantity = fetchedProduct.getQuantity();
             if (fetchedProductQuantity > orderItem.getQuantity()) {
-                System.out.println(orderItem.getId() + orderItem.getQuantity() +
-                        orderItem.getProduct().getId() + orderItem.getProduct().getQuantity() + orderItem.getProduct().getName() + orderItem.getProduct().getReviewSum() + orderItem.getProduct().getPrice()+
-                        orderItem.getOrder().getId() + orderItem.getOrder().getOrderStatus() + orderItem.getOrder().getCreatedAt() + orderItem.getOrder().getUser().getFirstName());
-                System.out.println(orderItem);
-                System.out.println(bodyValidator.isValid("string"));
                 if (bodyValidator.isValid(orderItem)) {
-                    System.out.println("test");
                     productService.addNewProduct(orderItem.getProduct());
                     OrderItem orderItem1 = orderItemService.addNewOrderItem(orderItem);
                     return new ObjectResponse<>(200, orderItem1, null);
