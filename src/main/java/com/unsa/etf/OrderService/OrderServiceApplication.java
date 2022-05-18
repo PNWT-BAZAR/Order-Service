@@ -8,6 +8,17 @@ import com.unsa.etf.OrderService.model.Order;
 import com.unsa.etf.OrderService.model.OrderItem;
 import com.unsa.etf.OrderService.model.Product;
 import com.unsa.etf.OrderService.model.User;
+import com.unsa.etf.OrderService.rabbitmq.Receiver;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,7 +36,6 @@ import java.util.Date;
 @EnableFeignClients
 @ComponentScan
 public class OrderServiceApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(OrderServiceApplication.class, args);
 	}

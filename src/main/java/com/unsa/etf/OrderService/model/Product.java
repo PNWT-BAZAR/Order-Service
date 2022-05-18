@@ -24,25 +24,33 @@ public class Product {
 
     private String description;
 
-    private Integer quantity;
+    private int quantity;
 
-    private Double price;
+    private float price;
 
-    private Integer reviewSum;
+    private int reviewSum;
 
-    private Integer totalReviews;
+    private int totalReviews;
+
+    private String categoryId;
+
+    private String subcategoryId;
 
     public Product(String name,
                    String description,
-                   Integer quantity,
-                   Double price,
-                   Integer reviewSum,
-                   Integer totalReviews) {
+                   int quantity,
+                   float price,
+                   int reviewSum,
+                   int totalReviews,
+                   String categoryId,
+                   String subcategoryId) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
         this.price = price;
         this.reviewSum = reviewSum;
         this.totalReviews = totalReviews;
+        this.categoryId = categoryId;
+        this.subcategoryId = subcategoryId;
     }
 }

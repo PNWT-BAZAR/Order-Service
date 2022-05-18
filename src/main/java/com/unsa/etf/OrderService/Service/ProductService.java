@@ -40,6 +40,11 @@ public class ProductService {
         return product;
     }
 
+    public Product updateProduct(Product product){
+        productRepository.save(product);
+        return product;
+    }
+
 //    public Order updateOrder(Order order) {
 //
 //        return orderRepository.save(order);
