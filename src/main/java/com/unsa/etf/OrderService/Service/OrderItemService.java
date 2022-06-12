@@ -57,4 +57,24 @@ public class OrderItemService {
         Page<OrderItem> orderItems = orderItemRepository.findAll(pageable);
         return new PaginatedObjectResponse<>(200, orderItems.getContent(), orderItems.getTotalElements(), orderItems.getTotalPages(), null);
     }
+
+    //Price per order
+    public Float getTotalPriceForOrder (String orderId){
+        var orderItems = orderItemRepository.getOrderItemsByOrderId(orderId);
+        var sum = 0.0F;
+        for (OrderItem orderItem : orderItems){
+            sum = sum + (orderItem.getProduct().getPrice() * orderItem.getQuantity());
+        }
+        return sum;
+    }
+
+    //Total price
+    public Float getTotalPrice (){
+        var allOrderItems = orderItemRepository.findAll();
+        var sum = 0.0F;
+        for (OrderItem orderItem : allOrderItems){
+            sum = sum + (orderItem.getProduct().getPrice() * orderItem.getQuantity());
+        }
+        return sum;
+    }
 }

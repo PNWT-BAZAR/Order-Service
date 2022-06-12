@@ -2,10 +2,13 @@ package com.unsa.etf.OrderService.Controller;
 
 import com.unsa.etf.OrderService.Responses.*;
 import com.unsa.etf.OrderService.RestConsumers.ProductRestConsumer;
+import com.unsa.etf.OrderService.Service.OrderItemService;
 import com.unsa.etf.OrderService.Service.OrderService;
 import com.unsa.etf.OrderService.Validator.BodyValidator;
 import com.unsa.etf.OrderService.model.Order;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.PropertyReferenceException;
@@ -15,22 +18,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("orders")
 public class OrderController {
     @Autowired
     private ProductRestConsumer productRestConsumer;
 
     private final OrderService orderService;
+    private final OrderItemService orderItemService;
     private final BodyValidator bodyValidator;
 
     @Value("${my.greeting: default value}")
     private String configData;
-
-    @Autowired
-    public OrderController(OrderService orderService, BodyValidator bodyValidator) {
-        this.orderService = orderService;
-        this.bodyValidator = bodyValidator;
-    }
 
     @GetMapping
     public ObjectListResponse<Order> getOrders() {
@@ -90,6 +89,14 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/price")
+    public ResponseEntity<Float> getPrice (@RequestParam(required = false) String orderId){
+        if(orderId != null){
+            var totalPriceForOrder = orderItemService.getTotalPriceForOrder(orderId);
+            return ResponseEntity.ok(totalPriceForOrder);
+        }
+        return ResponseEntity.ok(orderItemService.getTotalPrice());
+    }
 
     ////////FEIGN CLIENT
 //    @GetMapping("/test/{id}")

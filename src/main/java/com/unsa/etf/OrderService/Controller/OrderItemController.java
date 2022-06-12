@@ -70,6 +70,7 @@ public class OrderItemController {
             var fetchedProductQuantity = fetchedProduct.getQuantity();
             if (fetchedProductQuantity > orderItem.getQuantity()) {
                 if (bodyValidator.isValid(orderItem)) {
+                    // TODO: 25.05.2022. ovo nece trebat radi rabbita ja msm 
                     productService.addNewProduct(orderItem.getProduct());
                     OrderItem orderItem1 = orderItemService.addNewOrderItem(orderItem);
                     return new ObjectResponse<>(200, orderItem1, null);
@@ -143,5 +144,7 @@ public class OrderItemController {
         localProduct.setTotalReviews(localProduct.getTotalReviews() + 1);
         return localProduct;
     }
+
+
 
 }

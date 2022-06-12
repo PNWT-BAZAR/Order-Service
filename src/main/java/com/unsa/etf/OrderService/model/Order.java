@@ -28,10 +28,10 @@ public class Order {
     private User user;
 
     private LocalDateTime createdAt;
-    private Integer orderStatus;
+    private OrderStatus orderStatus;
     // 0 - Pending, 1 - WaitingForApproval 2 - Approved, 3 - Delivered
 
-    public Order(User user, LocalDateTime createdAt, Integer orderStatus) {
+    public Order(User user, LocalDateTime createdAt, OrderStatus orderStatus) {
         this.user = user;
         this.createdAt = createdAt;
         this.orderStatus = orderStatus;
